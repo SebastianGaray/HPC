@@ -1,8 +1,8 @@
 CC=gcc
 CFLAGS=-Wall
 
-all: main
-	$(CC) $(CFLAGS) main.c -o main
+all: simdsort
+	$(CC) $(CFLAGS) simdsort.c -o simdsort
 
 clean:
 	rm *.o
