@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-Wall
 
-all: simdsort
+simdsort: simdsort.c
 	$(CC) $(CFLAGS) simdsort.c -o simdsort
 
 clean:
