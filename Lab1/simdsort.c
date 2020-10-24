@@ -1,7 +1,11 @@
+// Importaciones de C
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
 #include <unistd.h>
+
+// Importaciones propias
+#include "files.h"
 
 int main(int argc, char **argv){
     int N, aux;
