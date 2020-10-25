@@ -1,10 +1,10 @@
-// Importaciones de C
+// C includes
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
 #include <unistd.h>
 
-// Importaciones propias
+// User includes
 #include "files.h"
 
 int main(int argc, char **argv){

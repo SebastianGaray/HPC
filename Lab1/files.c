@@ -6,10 +6,10 @@
 
 
 void readFile(char *inputFile, int N){
-    float *values = (float*)malloc(sizeof(float)*N);
+    float *array = (float*)malloc(sizeof(float)*N);
     int i = 0;
+    int value;
     while (i!=N){
-
+        fread();
     }
-
 }
