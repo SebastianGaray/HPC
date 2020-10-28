@@ -66,6 +66,8 @@ int main(int argc, char **argv){
 
 
 	float data[] __attribute__ ((aligned (16))) = {12,21,4,13,9,8,6,7,1,14,3,0,5,11,15,10};
+	//float data[] __attribute__ ((aligned (16))) = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
+
 	int N = 16;
 	// Se hace el proceso cada 16 datos
 	for(int i = 0; i<N; i=i+16){
@@ -96,12 +98,14 @@ int main(int argc, char **argv){
 		reg1 = minVector;
 		reg3 = maxVector;
 
+		// [[min R1][maxR3]]
 		// Comparacion arreglo 2 con 4
 		maxVector = _mm_max_ps(reg2,reg4);
 		minVector = _mm_min_ps(reg2,reg4);
 		// Se dejan los minimos en el registro "menor"
 		reg2 = minVector;
 		reg4 = maxVector;
+	
 
 		// Comparacion arreglo 1 con 2 y 3 con 4
 		maxVector = _mm_max_ps(reg1,reg2);
@@ -122,7 +126,9 @@ int main(int argc, char **argv){
 		reg2 = minVector;
 		reg3 = maxVector;
 
-		printf("Despues de min max:\n");
+
+
+		/*printf("Despues de min max:\n");
 		 _mm_store_ps(arr1, reg1);
 		 _mm_store_ps(arr2, reg2);
 		 _mm_store_ps(arr3, reg3);
@@ -130,9 +136,131 @@ int main(int argc, char **argv){
 		printArr(arr1, 4);
 		printArr(arr2, 4);
 		printArr(arr3, 4);
-		printArr(arr4, 4);
+		printArr(arr4, 4); */
+
+		__m128 A = _mm_shuffle_ps(reg1, reg3, _MM_SHUFFLE(1,0,1,0));
+			   A = _mm_shuffle_ps(A,A,_MM_SHUFFLE(3,1,2,0));
+	
+
+		__m128 B = _mm_shuffle_ps(reg1, reg3, _MM_SHUFFLE(3,2,3,2));
+			   B = _mm_shuffle_ps(B,B,_MM_SHUFFLE(3,1,2,0));
+	
+		__m128 C = _mm_shuffle_ps(reg2, reg4, _MM_SHUFFLE(1,0,1,0));
+			   C = _mm_shuffle_ps(C,C,_MM_SHUFFLE(3,1,2,0));
+	
+
+		__m128 D = _mm_shuffle_ps(reg2, reg4, _MM_SHUFFLE(3,2,3,2));
+			   D = _mm_shuffle_ps(D,D,_MM_SHUFFLE(3,1,2,0));
+
+
+		__m128 A1 = _mm_shuffle_ps(A, C, _MM_SHUFFLE(1,0,1,0));
+			   A1 = _mm_shuffle_ps(A1,A1,_MM_SHUFFLE(3,1,2,0));
+	
+
+		__m128 B1 = _mm_shuffle_ps(A, C, _MM_SHUFFLE(3,2,3,2));
+			   B1 = _mm_shuffle_ps(B1,B1,_MM_SHUFFLE(3,1,2,0));
+	
+		__m128 C1 = _mm_shuffle_ps(B, D, _MM_SHUFFLE(1,0,1,0));
+			   C1 = _mm_shuffle_ps(C1,C1,_MM_SHUFFLE(3,1,2,0));
+	
+
+		__m128 D1 = _mm_shuffle_ps(B, D, _MM_SHUFFLE(3,2,3,2));
+			   D1 = _mm_shuffle_ps(D1,D1,_MM_SHUFFLE(3,1,2,0));
+	
+	 /*printf("Despues de min max:\n");
+		 _mm_store_ps(arr1, A1);
+		 _mm_store_ps(arr2, B1);
+		 _mm_store_ps(arr3, C1);
+		 _mm_store_ps(arr4, D1);
+		printArr(arr1, 4);
+		printArr(arr2, 4);
+		printArr(arr3, 4);
+		printArr(arr4, 4);  */ 
+
+		// => A1 B1
+		// => 
+
+	
+	
+
+		__m128  B2= _mm_shuffle_ps(B1, B1, _MM_SHUFFLE(3,1,2,0));
+		__m128  A2= _mm_shuffle_ps(A1, A1, _MM_SHUFFLE(3,1,2,0));
+
+		maxVector = _mm_max_ps(A2,B2);
+		minVector = _mm_min_ps(A2,B2);
+
+			
+		// BIEN ! // 
+
+
+		__m128   Max1  = _mm_shuffle_ps(maxVector, minVector, _MM_SHUFFLE(2,0,2,0));
+		__m128   Min1  = _mm_shuffle_ps(maxVector, minVector, _MM_SHUFFLE(3,1,3,1));
+
+	
+		 Max1  = _mm_shuffle_ps(Max1, Max1, _MM_SHUFFLE(2,0,3,1));
+		 Min1  = _mm_shuffle_ps(Min1, Min1, _MM_SHUFFLE(2,0,3,1));
+
+	
+		maxVector = _mm_max_ps(Max1,Min1);
+		minVector = _mm_min_ps(Max1,Min1);
+
+
 		
-	}
+
+		// [5,7,6,8]// SHUFFLE
+		// [4,2,3,1] // SHUFFLE
+	
+
+		// [5,4,6,3]
+		// [7,2,8,1]
+
+
+
+
+		// [7,4,8,3]
+		// [5,2,6,1]
+
+						/*
+printf("Despues de min max:\n");
+			 _mm_store_ps(arr1, maxVector);
+		 _mm_store_ps(arr2, minVector);
+
+		printArr(arr1, 4);
+		printArr(arr2, 4); */
+		
+
+		__m128   Max2  = _mm_shuffle_ps(maxVector, minVector, _MM_SHUFFLE(1,0,1,0));
+		__m128   Min2  = _mm_shuffle_ps(maxVector, minVector, _MM_SHUFFLE(3,2,3,2));
+
+						
+
+		Max2  = _mm_shuffle_ps(Max2, Max2, _MM_SHUFFLE(3,1,2,0));
+		Min2  = _mm_shuffle_ps(Min2, Min2, _MM_SHUFFLE(3,1,2,0));
+
+
+
+		maxVector = _mm_max_ps(Max2,Min2);
+		minVector = _mm_min_ps(Max2,Min2);
+
+
+printf("Despues de min max:\n");
+			 _mm_store_ps(arr1, maxVector);
+		 _mm_store_ps(arr2, minVector);
+
+		printArr(arr1, 4);
+		printArr(arr2, 4);
+
+			
+
+
+		/*printf("Despues de min max:\n");
+		 _mm_store_ps(arr1, maxVector);
+		 _mm_store_ps(arr2, minVector);
+
+		printArr(arr1, 4);
+		printArr(arr2, 4);
+ */ 
+
 	/*
 	__m128 A, B;
 	float arr1[]  __attribute__ ((aligned (16))) = {8,4,9,1};
@@ -142,5 +270,5 @@ int main(int argc, char **argv){
 	for (i = 0; i < 2; i++)
         printf("%f \n",  printvector[i]); 
 	*/
-	
+	}
 }
