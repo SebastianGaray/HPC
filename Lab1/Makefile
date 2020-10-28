@@ -8,4 +8,5 @@ files.o: files.h files.c
 	$(CC) $(CFLAGS) -c files.c -o files.o
 
 clean:
+	rm simdsort
 	rm *.o
