@@ -1,8 +1,8 @@
 CC=gcc
 CFLAGS=-Wall
 
-simdsort: simdsort.c files.o
-	$(CC) $(CFLAGS) simdsort.c -o simdsort
+simdsort: simdsortv2.c files.o
+	$(CC) $(CFLAGS) simdsortv2.c -o simdsort
 
 files.o: files.h files.c
 	$(CC) $(CFLAGS) -c files.c -o files.o
