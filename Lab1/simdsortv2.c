@@ -11,8 +11,8 @@
 #include "files.h"
 
 typedef struct myBMNResponse{
-	__m128 maxVector;
-	__m128 minVector;
+	__m128 s1;
+	__m128 s2;
 }BMNResponse;
 
 void printArr(float arr[4], int size){
@@ -52,7 +52,12 @@ BMNResponse BMN(__m128 vector1, __m128 vector2){
 	minVector 		= _mm_max_ps(Max2,Min2);
 	maxVector 		= _mm_min_ps(Max2,Min2);
 
-	BMNResponse myResponse = {maxVector, minVector};
+	__m128   s1 	=  _mm_shuffle_ps(maxVector, minVector, _MM_SHUFFLE(1,0,1,0));
+	s1 				=  _mm_shuffle_ps(s1, s1, _MM_SHUFFLE(3,1,2,0));
+	__m128   s2 	=  _mm_shuffle_ps(maxVector, minVector, _MM_SHUFFLE(3,2,3,2));
+	s2				=  _mm_shuffle_ps(s2, s2, _MM_SHUFFLE(3,1,2,0));
+
+	BMNResponse myResponse = {s1, s2};
 	return myResponse;
 }
 
@@ -85,7 +90,7 @@ int main(int argc, char **argv){
     printf("Debug flag: %i\n",debugFlag); */ 
 
 
-	//float data[] __attribute__ ((aligned (16))) = {12,21,4,13,9,8,6,7,1,14,3,0,5,11,15,10};
+	//float data[] __attribute__ ((aligned (16))) = {3,8,1,13,9,50,33,14,55,3,1,53,66,25,31,6};
 	float data[] __attribute__ ((aligned (16))) = {12,21,4,13,9,8,6,7,1,14,3,0,5,11,15,10};
 	//float data[] __attribute__ ((aligned (16))) = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
 
@@ -211,10 +216,45 @@ int main(int argc, char **argv){
 		BMNResponse secondBMNResponse = BMN(D1, C1);
 				
 		printf("\n\n\n");
-		_mm_store_ps(arr1, firstBMNResponse.maxVector);
-		_mm_store_ps(arr2, firstBMNResponse.minVector);
+		printf("Luego de BMN\n");
+		_mm_store_ps(arr1, firstBMNResponse.s1);
+		_mm_store_ps(arr2, firstBMNResponse.s2);
+		_mm_store_ps(arr3, secondBMNResponse.s1);
+		_mm_store_ps(arr4, secondBMNResponse.s2);
 		printArr(arr1, 4);
 		printArr(arr2, 4);
+		printArr(arr3, 4);
+		printArr(arr4, 4);
 	
+		//////////////////////////////
+		// Merge SIMD de secuencias //
+		//////////////////////////////
+		printf("\n\n\n");
+		printf("Merge SIMD de secuencias\n");
+		// Se alimenta la BMN con los 4 primeros elementos de ambas secuencias
+		BMNResponse firstMergeResponse = BMN(firstBMNResponse.s1, secondBMNResponse.s1);
+
+		BMNResponse secondMergeResponse;
+		// S2 pasa a ser S1, y para el 2do arreglo se utiliza aquel que tenga el menor elemento 0
+		if(firstBMNResponse.s2[0] < secondBMNResponse.s2[0]){
+			secondMergeResponse = BMN(firstMergeResponse.s2, firstBMNResponse.s2);
+		} else {
+			secondMergeResponse = BMN(firstMergeResponse.s2, secondBMNResponse.s2);
+		}
+		BMNResponse thirdMergeResponse;
+		// S2 pasa a ser S1, y para el segundo arreglo se utiliza el que no se utilizo antes
+		if(firstBMNResponse.s2[0] < secondBMNResponse.s2[0]){
+			thirdMergeResponse = BMN(secondMergeResponse.s2, secondBMNResponse.s2);
+		} else {
+			thirdMergeResponse = BMN(secondMergeResponse.s2, firstBMNResponse.s2);
+		}
+		_mm_store_ps(arr1, firstMergeResponse.s1);
+		printArr(arr1, 4);
+		_mm_store_ps(arr2, secondMergeResponse.s1);
+		printArr(arr2, 4);
+		_mm_store_ps(arr3, thirdMergeResponse.s1);
+		printArr(arr3, 4);
+		_mm_store_ps(arr4, thirdMergeResponse.s2);
+		printArr(arr4, 4);
 	}
 }
