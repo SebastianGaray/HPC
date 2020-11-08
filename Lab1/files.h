@@ -1,3 +1,2 @@
 
-
-void readFile(char *inputFile, int N);
+float *readFile(char *inputFile, int N);
