@@ -15,9 +15,6 @@ int main(int argc, char **argv){
 	Heap *heap = initHeap();
 	insertInHeap(heap, 20);
 	insertInHeap(heap, 3);
-	debugHeap(heap);
-	deleteFromHeap(heap);
-	/*
 	insertInHeap(heap, 5);
 	insertInHeap(heap, 55);
 	insertInHeap(heap, 10);
@@ -26,12 +23,14 @@ int main(int argc, char **argv){
 	insertInHeap(heap, 1);
 	insertInHeap(heap, 4);
 	insertInHeap(heap, 0);
-	*/
+	float x;
+	x = deleteFromHeap(heap);
+	printf ("%f",x);
+	x = deleteFromHeap(heap);
+	printf ("%f",x);
+	x = deleteFromHeap(heap);
+	printf ("%f",x);
 	debugHeap(heap);
-
-
-
-
 	//int N;
     //int debugFlag = 0;
     //char *inputFile, *outputFile = NULL;

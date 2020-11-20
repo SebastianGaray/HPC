@@ -21,6 +21,13 @@ int getFather (int actualPosition) {
 	}
 	return (actualPosition/2);
 }
+int getLeft (int actualPosition) {
+	return (2*actualPosition +1);
+}
+int getRight (int actualPosition) {
+	return (2*actualPosition +2);
+}
+
 
 Heap *initHeap(){
     float *values = (float*)malloc(sizeof(float)*16);
@@ -39,10 +46,13 @@ void *swap (Heap *h,int x, int y) {
 
 void *heapifyDown(Heap *heap, int posActual){
     printf("Ordenando heap...\n");
-    int fIndex = getFather(posActual);
-    if (heap->values[posActual] < heap->values[fIndex]){
-        swap(heap,posActual,fIndex);
-        heapifyUp(heap, fIndex);
+    int sLeftIndex = getLeft(posActual);
+    int sRightIndex = getRight(posActual);
+    float min = (heap->values[sLeftIndex] < heap->values[sRightIndex] ? heap->values[sLeftIndex]: heap->values[sRightIndex]);
+    int minIndex =  (heap->values[sLeftIndex] < heap->values[sRightIndex] ? sLeftIndex: sRightIndex);
+    if (heap->values[posActual] < min){
+         swap(heap,posActual,minIndex);
+         heapifyDown(heap,minIndex);
     }
 }
 
@@ -70,6 +80,6 @@ float deleteFromHeap(Heap *heap){
     heap->values[0] = heap->values[heap->lastPos-1];
     heap->values[heap->lastPos-1] = 0;
     heap->lastPos = heap->lastPos - 1;
-        //heapifyDown(heap,0);
+    heapifyDown(heap,0);
     return value;
 }
