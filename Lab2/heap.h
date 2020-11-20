@@ -7,3 +7,4 @@ typedef struct H{
 void insertInHeap(Heap *heap, float value);
 Heap *initHeap();
 void *heapifyUp(Heap *heap,int posActual);
+float deleteFromHeap(Heap *heap);

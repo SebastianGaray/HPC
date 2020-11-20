@@ -37,7 +37,16 @@ void *swap (Heap *h,int x, int y) {
     h->values[y] =aux;
 }
 
-void *heapifyUp(Heap *heap,int posActual){
+void *heapifyDown(Heap *heap, int posActual){
+    printf("Ordenando heap...\n");
+    int fIndex = getFather(posActual);
+    if (heap->values[posActual] < heap->values[fIndex]){
+        swap(heap,posActual,fIndex);
+        heapifyUp(heap, fIndex);
+    }
+}
+
+void *heapifyUp(Heap *heap, int posActual){
     printf("Ordenando heap...\n");
     int fIndex = getFather(posActual);
     if (heap->values[posActual] < heap->values[fIndex]){
@@ -53,5 +62,14 @@ void insertInHeap(Heap *heap, float value){
     if(heap->lastPos != 1){
         heapifyUp(heap,heap->lastPos-1);
     }
-    
+}
+
+float deleteFromHeap(Heap *heap){
+    printf("\nEliminando la raiz del heap\n");
+    float value = heap->values[0];
+    heap->values[0] = heap->values[heap->lastPos-1];
+    heap->values[heap->lastPos-1] = 0;
+    heap->lastPos = heap->lastPos - 1;
+        //heapifyDown(heap,0);
+    return value;
 }
