@@ -1,17 +1,21 @@
 CC=gcc
 CFLAGS=-Wall
 
-simdsort: simdsort.c files.o sort.o
-	$(CC) $(CFLAGS) sort.o files.o simdsort.c -o simdsort
+sort: sort.c simdsort.o files.o heap.o
+	$(CC) $(CFLAGS) heap.o simdsort.o files.o sort.c -o sort
+
+simdsort.o: simdsort.h simdsort.c
+	$(CC) $(CFLAGS) simdsort.c -c
 
 files.o: files.h files.c
-	$(CC) $(CFLAGS) -c files.c -o files.o
+	$(CC) $(CFLAGS) files.c -c
 
-sort.o: sort.h sort.c
-	$(CC) $(CFLAGS) -c sort.c -o sort.o
+heap.o: heap.h heap.c
+	$(CC) $(CFLAGS) heap.c -c
+
 
 
 clean:
 	rm *.o
-	rm simdsort
+	rm sort
 	

@@ -1,15 +1,12 @@
 // C includes
 #include <stdlib.h>
 #include <stdio.h>
-#include <ctype.h>
-#include <unistd.h>
 #include <string.h>    /* memcpy */
 #include <cpuid.h>     /* __get_cpuid_max, __get_cpuid */
 #include <mmintrin.h>  /* MMX instrinsics  __m64 integer type  */
 #include <xmmintrin.h> /* SSE  __m128  float */
-// User includes
-#include "files.h"
-#include "sort.h"
+
+
 
 
 typedef struct myBMNResponse{
@@ -67,34 +64,8 @@ BMNResponse BMN(__m128 vector1, __m128 vector2){
 }
 
 
-int main(int argc, char **argv){
-   	int N, aux;
-    int debugFlag = 0;
-    char *inputFile, *outputFile = NULL;
-    while ((aux = getopt (argc, argv, ":i:o:N:d:")) != -1){
-		switch (aux){
-			case 'i':
-				inputFile = optarg;
-				break;
-			case 'o':
-				outputFile = optarg;
-				break;
-			case 'N':
-				N = atoi(optarg);
-				break;
-			case 'd':
-				debugFlag = atoi(optarg);
-				break;
-			case '?':
-                fprintf(stderr, "ERROR, Opcion invalida: -%c\n", optopt);
-                return EXIT_FAILURE;
-			case ':':
-                fprintf(stderr, "ERROR, Falta el argumento de la opcion: -%c\n", optopt);
-                return EXIT_FAILURE;
-		}
-	}
-
-	float *data = readFile(inputFile, N);
+void simdsort(int N, int debugFlag, float *data){
+   	
 	float *outputArray= (float*)malloc(sizeof(float)*N);
 	// Se hace el proceso cada 16 datos
 	for(int i = 0; i<N; i=i+16){
@@ -271,14 +242,8 @@ int main(int argc, char **argv){
 		}
 		printf("\n");
 	}
-	sort(outputArray, N);
+	//sort(outputArray, N);
 	
-	if(debugFlag == 1){
-		printf("\nLista ordenada:\n");
-		for(int i = 0; i<N; i++){
-			printf("%f ", outputArray[i]);
-		}
-		printf("\n");
-	}
-	writeFile(outputFile, N, outputArray);
+	
+	//writeFile(outputFile, N, outputArray);
 }

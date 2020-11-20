@@ -9,11 +9,15 @@
 #include <xmmintrin.h> /* SSE  __m128  float */
 // User includes
 #include "files.h"
+#include "sort.h"
+
 
 typedef struct myBMNResponse{
 	__m128 s1;
 	__m128 s2;
 }BMNResponse;
+
+
 
 void debug(__m128 vector){
 	float arr[4] __attribute__ ((aligned (16))) = {0,0,0,0};
@@ -89,17 +93,9 @@ int main(int argc, char **argv){
                 return EXIT_FAILURE;
 		}
 	}
-    printf("Input File: %s\n",inputFile);
-    printf("Output File: %s\n",outputFile);
-    printf("N: %i\n",N);
-    printf("Debug flag: %i\n",debugFlag); 
+
 	float *data = readFile(inputFile, N);
 	float *outputArray= (float*)malloc(sizeof(float)*N);
-
-	//float data[] __attribute__ ((aligned (16))) = {3,8,1,13,9,50,33,14,55,3,1,53,66,25,31,6};
-	//float data[] __attribute__ ((aligned (16))) = {12,21,4,13,9,8,6,7,1,14,3,0,5,11,15,10};
-	//float data[] __attribute__ ((aligned (16))) = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
-
 	// Se hace el proceso cada 16 datos
 	for(int i = 0; i<N; i=i+16){
 		__m128 reg1, reg2, reg3, reg4, maxVector, minVector;
@@ -261,7 +257,7 @@ int main(int argc, char **argv){
 		_mm_store_ps(arr2, secondMergeResponse.s1);
 		_mm_store_ps(arr3, thirdMergeResponse.s1);
 		_mm_store_ps(arr4, thirdMergeResponse.s2);
-		for(int j = 0; j<4; j++){
+		for(int j = 0; j<N/16; j++){
 			outputArray[i+j] = arr1[j];
 			outputArray[i+j+4] = arr2[j];
 			outputArray[i+j+8] = arr3[j];
@@ -269,10 +265,20 @@ int main(int argc, char **argv){
 		}
 	}
 	if(debugFlag == 1){
-		printf("\nArray final sin ordenar:\n");
+		printf("\nArray final ordenado:\n");
 		for(int x = 0; x<N; x++){
 			printf("%f ",outputArray[x]);
 		}
 		printf("\n");
 	}
+	sort(outputArray, N);
+	
+	if(debugFlag == 1){
+		printf("\nLista ordenada:\n");
+		for(int i = 0; i<N; i++){
+			printf("%f ", outputArray[i]);
+		}
+		printf("\n");
+	}
+	writeFile(outputFile, N, outputArray);
 }

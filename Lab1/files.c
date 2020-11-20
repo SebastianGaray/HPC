@@ -16,6 +16,14 @@ float *readFile(char *inputFile, int N){
 		exit(EXIT_FAILURE);
 	}
     fread(array, sizeof(float), N, file);
-
+	fclose(file);
     return array;
+}
+
+void writeFile(char *outputFile, int N, float *outputArrayFinal){
+    FILE *file = fopen(outputFile,"wb");
+	for(int i = 0; i<N; i++){
+    	fwrite(&outputArrayFinal[i],sizeof(float),1,file);
+	}
+	fclose(file);
 }
