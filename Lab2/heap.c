@@ -12,6 +12,16 @@ void debugHeap(Heap *heap){
 	printf("\n");
 }
 
+int getFather (int actualPosition) {
+	if (actualPosition == 0){
+		return -1;
+	}
+	if (actualPosition % 2 == 0 ){
+		return (actualPosition/2 -1);
+	}
+	return (actualPosition/2);
+}
+
 Heap *initHeap(){
     float *values = (float*)malloc(sizeof(float)*16);
     int lastPos = 0;
@@ -21,24 +31,18 @@ Heap *initHeap(){
     return heap;
 }
 
-Heap *heapifyUp(Heap *heap){
+void *swap (Heap *h,int x, int y) {
+    float aux  = h->values[x];
+    h->values[x] = h->values[y];
+    h->values[y] =aux;
+}
+
+void *heapifyUp(Heap *heap,int posActual){
     printf("Ordenando heap...\n");
-    // Se revisa cada una de las posibilidades de que el hijo sea mayor que el padre
-    float swap;
-    if(heap->lastPos == 2 && heap->values[heap->lastPos-1] < heap->values[heap->lastPos-2]){
-        swap = heap->values[heap->lastPos-2];
-        heap->values[heap->lastPos-2] = heap->values[heap->lastPos-1];
-        heap->values[heap->lastPos-1] = swap;
-    }
-    if((heap->lastPos == 3 || heap->lastPos == 4) && heap->values[heap->lastPos-1] < heap->values[heap->lastPos-3]){
-        swap = heap->values[heap->lastPos-3];
-        heap->values[heap->lastPos-3] = heap->values[heap->lastPos-1];
-        heap->values[heap->lastPos-1] = swap;
-    }
-    if((heap->lastPos == 5 || heap->lastPos == 6) && heap->values[heap->lastPos-1] < heap->values[heap->lastPos-4]){
-        swap = heap->values[heap->lastPos-4];
-        heap->values[heap->lastPos-4] = heap->values[heap->lastPos-1];
-        heap->values[heap->lastPos-1] = swap;
+    int fIndex = getFather(posActual);
+    if (heap->values[posActual] < heap->values[fIndex]){
+        swap(heap,posActual,fIndex);
+        heapifyUp(heap, fIndex);
     }
 }
 
@@ -47,6 +51,7 @@ void insertInHeap(Heap *heap, float value){
     heap->values[heap->lastPos] = value;
     heap->lastPos = heap->lastPos + 1;
     if(heap->lastPos != 1){
-        heapifyUp(heap);
+        heapifyUp(heap,heap->lastPos-1);
     }
+    
 }

@@ -6,4 +6,4 @@ typedef struct H{
 
 void insertInHeap(Heap *heap, float value);
 Heap *initHeap();
-Heap *heapifyUp(Heap *heap);
+void *heapifyUp(Heap *heap,int posActual);

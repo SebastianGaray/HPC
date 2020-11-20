@@ -9,13 +9,31 @@
 
 
 
+
 int main(int argc, char **argv){
-	int N;
+
+	Heap *heap = initHeap();
+	insertInHeap(heap, 20);
+	insertInHeap(heap, 3);
+	insertInHeap(heap, 5);
+	insertInHeap(heap, 55);
+	insertInHeap(heap, 10);
+	insertInHeap(heap, 3);
+	insertInHeap(heap, 90);
+	insertInHeap(heap, 1);
+	insertInHeap(heap, 4);
+	insertInHeap(heap, 0);
+	debugHeap(heap);
+
+
+
+
+	//int N;
     //int debugFlag = 0;
     //char *inputFile, *outputFile = NULL;
-    char *inputFile;
-	N = 64;
-	inputFile = "64floats.raw";
+    //char *inputFile;
+	//N = 64;
+	//inputFile = "64floats.raw";
 	/* 
     while ((aux = getopt (argc, argv, ":i:o:N:d:")) != -1){
 		switch (aux){
@@ -42,14 +60,14 @@ int main(int argc, char **argv){
 	*/
 
 	//float *data = readFile(inputFile, N);
-	Heap *heap = initHeap();
+	/*Heap *heap = initHeap();
 	insertInHeap(heap, 7);
 	insertInHeap(heap, 3);
 	insertInHeap(heap, 5);
 	insertInHeap(heap, 8);
 	insertInHeap(heap, 1);
 	insertInHeap(heap, 2);
-    debugHeap(heap);
+    debugHeap(heap);*/
 
 	return 1;
 }
