@@ -26,12 +26,13 @@ void recorrer(float *arrayNumbers,int length, int numLevels){
 	}
 	printf("\n");
 	 if(numLevels == 0){
-		 int i;
+		 printf("")
+		 /*int i;
 		 for ( i = 0;i < length ;i +=16){
 			Heap *h = simdsort(16,0, arrayNumbers);
 			debugHeap(h);
 		 }
-		mostrar(arrayNumbers,length);
+		mostrar(arrayNumbers,length);*/ 
 		return;
 	 }
 	 int mitad = length/2;
@@ -57,8 +58,8 @@ void mostrar(float *arrayNumbers,int length){
 int main(int argc, char **argv){
 
 	int N, l;
-	N = 4; //hebras
-	l = 32; //largo
+	N = 2; //hebras
+	l = 128; //largo
 	float arrayNumbers[l];
 	for (int i = 0; i < l; ++i)
 	{
