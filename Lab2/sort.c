@@ -13,20 +13,37 @@
 int main(int argc, char **argv){
 
 	Heap *heap = initHeap();
-	insertInHeap(heap, 20);
-	insertInHeap(heap, 3);
-	insertInHeap(heap, 5);
-	insertInHeap(heap, 55);
-	insertInHeap(heap, 10);
-	insertInHeap(heap, 3);
-	insertInHeap(heap, 90);
-	insertInHeap(heap, 1);
-	insertInHeap(heap, 4);
+	insertInHeap(heap, 88);
 	insertInHeap(heap, 0);
+	insertInHeap(heap, 28);
+	insertInHeap(heap, 95);
+	insertInHeap(heap, 92);
+	insertInHeap(heap, 79);
+	insertInHeap(heap, 0);
+	insertInHeap(heap, 1);
+	insertInHeap(heap, 92);
+	insertInHeap(heap, 63);
+	insertInHeap(heap, 13);
+	
 	float x;
 	x = deleteFromHeap(heap);
-	printf ("%f",x);
 	x = deleteFromHeap(heap);
+	x = deleteFromHeap(heap);
+	x = deleteFromHeap(heap);
+	x = deleteFromHeap(heap);
+	x = deleteFromHeap(heap);
+	x = deleteFromHeap(heap);
+	x = deleteFromHeap(heap);
+	x = deleteFromHeap(heap);
+	x = deleteFromHeap(heap);
+	x = deleteFromHeap(heap);
+	x = deleteFromHeap(heap);
+
+
+	//printf ("%f",x);
+	debugHeap(heap);
+
+	/*x = deleteFromHeap(heap);
 	printf ("%f",x);
 	x = deleteFromHeap(heap);
 	printf ("%f",x);

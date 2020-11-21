@@ -3,7 +3,7 @@
 
 #include "heap.h"
 
-void debugHeap(Heap *heap){
+void *debugHeap(Heap *heap){
     printf("\nLast pos: %i\n", heap->lastPos);
     printf("Values:\n");
 	for(int i = 0; i<16; i++){
@@ -45,19 +45,36 @@ void *swap (Heap *h,int x, int y) {
 }
 
 void *heapifyDown(Heap *heap, int posActual){
-    printf("Ordenando heap...\n");
+    debugHeap(heap);
     int sLeftIndex = getLeft(posActual);
     int sRightIndex = getRight(posActual);
-    float min = (heap->values[sLeftIndex] < heap->values[sRightIndex] ? heap->values[sLeftIndex]: heap->values[sRightIndex]);
-    int minIndex =  (heap->values[sLeftIndex] < heap->values[sRightIndex] ? sLeftIndex: sRightIndex);
-    if (heap->values[posActual] < min){
+    float min;
+    int minIndex;
+    /* Caso 1 : */ 
+    /*  No tengo hijos */
+    // Mayor o igual ?
+    if  ( (sLeftIndex  >= heap->lastPos) &&  (sRightIndex >= heap->lastPos)){
+        return;
+    }
+    else if (sLeftIndex  >= heap->lastPos){
+        min =  heap->values[sRightIndex];
+        minIndex = sRightIndex;
+    }
+    else if (sRightIndex >=  heap->lastPos){
+        min =  heap->values[sLeftIndex];
+        minIndex = sLeftIndex;
+    }
+    else {
+        min = (heap->values[sLeftIndex] < heap->values[sRightIndex] ? heap->values[sLeftIndex]: heap->values[sRightIndex]);
+        minIndex =  (heap->values[sLeftIndex] < heap->values[sRightIndex] ? sLeftIndex: sRightIndex);
+    }
+    if (heap->values[posActual] > min){
          swap(heap,posActual,minIndex);
          heapifyDown(heap,minIndex);
     }
 }
 
 void *heapifyUp(Heap *heap, int posActual){
-    printf("Ordenando heap...\n");
     int fIndex = getFather(posActual);
     if (heap->values[posActual] < heap->values[fIndex]){
         swap(heap,posActual,fIndex);
@@ -66,7 +83,6 @@ void *heapifyUp(Heap *heap, int posActual){
 }
 
 void insertInHeap(Heap *heap, float value){
-    printf("\nInsertando el valor: %f\n", value);
     heap->values[heap->lastPos] = value;
     heap->lastPos = heap->lastPos + 1;
     if(heap->lastPos != 1){
@@ -75,7 +91,6 @@ void insertInHeap(Heap *heap, float value){
 }
 
 float deleteFromHeap(Heap *heap){
-    printf("\nEliminando la raiz del heap\n");
     float value = heap->values[0];
     heap->values[0] = heap->values[heap->lastPos-1];
     heap->values[heap->lastPos-1] = 0;
