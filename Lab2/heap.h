@@ -1,10 +1,17 @@
+typedef struct HValues{
+    float value;
+    int originalListIndex;
+}HeapValues;
+
+
 typedef struct H{
-    float *values;
+    HeapValues *values;
     int lastPos;
+    int size;
 }Heap;
 
 
-void insertInHeap(Heap *heap, float value);
-Heap *initHeap();
-void *heapifyUp(Heap *heap,int posActual);
-float deleteFromHeap(Heap *heap);
+void insertInHeap(Heap *heap, float value, int originalListIndex);
+Heap *initHeap(int size);
+void heapifyUp(Heap *heap,int posActual);
+HeapValues deleteFromHeap(Heap *heap);

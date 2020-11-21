@@ -1,2 +1,2 @@
 #include "heap.h"
-Heap *simdsort(int N, int debugFlag, float *data);
+void simdsort(int i, int debugFlag, float *data);

@@ -9,81 +9,88 @@
 
 
 
-void inicio (float *arrayNumbers, int length, int numThreads){
- 	int numLevels = 3;
+void multiway_sort(float *arrayNumbers,int length){
+	Heap *h = initHeap(length/16);
+	float *outputArray= (float*)malloc(sizeof(float)*length);
+	for ( int i = 0;i < length ;i +=16){
+		insertInHeap(h, arrayNumbers[i],i);
+	}
+	for (int j = 0; j < length; j++){
+		HeapValues x = deleteFromHeap(h);
+		outputArray[j] = x.value;
+		if ((x.originalListIndex+1)%16 != 0 && x.originalListIndex < length){
+			insertInHeap(h, arrayNumbers[x.originalListIndex+1],x.originalListIndex+1);
+		}
+	}
+	
+	
+}
+
+void dividir(float *arrayNumbers, int length, int numLevels)
+{
+	if (numLevels == 0)
+	{
+		for ( int i = 0;i < length ;i +=16){
+			 // debug, index, arreglo
+			simdsort(0,i,arrayNumbers);
+		}
+
+		multiway_sort(arrayNumbers, length);
+		return;
+	}
+	int mitad = length / 2;
+
+#pragma omp task untied
+	{
+		dividir(arrayNumbers, mitad, numLevels - 1);
+	}
+#pragma omp task untied
+	{
+		dividir(arrayNumbers + mitad, mitad, numLevels - 1);
+	}
+}
+
+void inicio(float *arrayNumbers, int length, int numThreads, int numLevels)
+{
 	omp_set_num_threads(numThreads);
 	#pragma omp parallel
+	dividir(arrayNumbers, length, numLevels);
 	#pragma omp single nowait
-	recorrer(arrayNumbers, length, numLevels);
+	printf("-----");
+	/*
+	for ( int i = 0;i < length ;i +=1){
+		printf("%f ", arrayNumbers[i]);
+	}
+	printf("\n-----\n");
+	*/
+	return;
 }
 
-void recorrer(float *arrayNumbers,int length, int numLevels){
-	int tid = omp_get_thread_num();
-	printf("thread %d\n", tid);
-	for (int i = 0; i < length; ++i)
-	{
-		printf("%f-", arrayNumbers[i] );
+int main(int argc, char **argv)
+{
+	// N Hebras, l largo
+	int N, l, numLevels;
+	char *inputFile;
+	numLevels = 1;
+	inputFile = "65536floats.raw";
+	l = 65536;
+	float *arrayNumbers = readFile(inputFile, l);
+	for(N = 1; N <= 50; N++){
+		printf("Comenzando configuracion:\n");
+		printf("Hebras: {%i} size: {%i} niveles: {%i}\n", N, l, numLevels);
+		
+
+		//Mido tiempo de inicio de procesamiento
+		struct tms t_ini_struct;
+		clock_t t_ini = times(&t_ini_struct);
+
+		inicio(arrayNumbers, l, N, numLevels);
+		struct tms t_fin_struct;
+		clock_t t_fin = times(&t_fin_struct);
+		printf("El algoritmo demoró %.3f segundos\n", (t_fin - t_ini) / (double)sysconf(_SC_CLK_TCK));
 	}
-	printf("\n");
-	 if(numLevels == 0){
-		 printf("")
-		 /*int i;
-		 for ( i = 0;i < length ;i +=16){
-			Heap *h = simdsort(16,0, arrayNumbers);
-			debugHeap(h);
-		 }
-		mostrar(arrayNumbers,length);*/ 
-		return;
-	 }
-	 int mitad = length/2;
-	
-	#pragma omp task untied
-	{
-		recorrer(arrayNumbers, mitad, numLevels-1);
-	}
-	#pragma omp task untied
-	{
-		recorrer(arrayNumbers+mitad, mitad, numLevels-1);
-	}
-
-}
-void suma(float *arrayNumbers,int length){
-
-}
-void mostrar(float *arrayNumbers,int length){
-
-}
-
-
-int main(int argc, char **argv){
-
-	int N, l;
-	N = 2; //hebras
-	l = 128; //largo
-	float arrayNumbers[l];
-	for (int i = 0; i < l; ++i)
-	{
-		arrayNumbers[i] =  rand() % (l);
-	}
-
-	/*printf("los valores son: \n");
-	for (int i = 0; i < l; ++i)
-	{
-		printf("%f \n", arrayNumbers[i] );
-	}*/ 
-	
-	//Mido tiempo de inicio de procesamiento
-	struct tms t_ini_struct;
-	clock_t t_ini = times(&t_ini_struct);
-	
-	inicio(arrayNumbers, l, N);
-	struct tms t_fin_struct;
-	clock_t t_fin = times(&t_fin_struct);
-	printf("El algoritmo demoró %.3f segundos\n", (t_fin-t_ini)/(double)sysconf(_SC_CLK_TCK));
 	return 0;
 
-
-	
 	/*Heap *heap = initHeap();
 	insertInHeap(heap, 88);
 	insertInHeap(heap, 0);
@@ -115,7 +122,7 @@ int main(int argc, char **argv){
 	//printf ("%f",x);
 	debugHeap(heap);
 
-	/*x = deleteFromHeap(heap);
+	x = deleteFromHeap(heap);
 	printf ("%f",x);
 	x = deleteFromHeap(heap);
 	printf ("%f",x);
@@ -126,7 +133,6 @@ int main(int argc, char **argv){
     //char *inputFile;
 	//N = 64;
 	//inputFile = "64floats.raw";
-	/* 
     while ((aux = getopt (argc, argv, ":i:o:N:d:")) != -1){
 		switch (aux){
 			case 'i':
@@ -163,4 +169,3 @@ int main(int argc, char **argv){
 
 	return 1;
 }
-

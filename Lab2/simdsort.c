@@ -62,193 +62,155 @@ BMNResponse BMN(__m128 vector1, __m128 vector2){
 }
 
 
-Heap *simdsort(int N, int debugFlag, float *data){
+void simdsort(int debugFlag, int i,  float *data){
    	
-	float *outputArray= (float*)malloc(sizeof(float)*N);
-		
-		float arr1[4] __attribute__ ((aligned (16))) = {data[0],data[1],data[2],data[3]};
-		float arr2[4] __attribute__ ((aligned (16))) = {data[4],data[5],data[6],data[7]};
-		float arr3[4] __attribute__ ((aligned (16))) = {data[8],data[9],data[10],data[11]};
-		float arr4[4] __attribute__ ((aligned (16))) = {data[12],data[13],data[14],data[15]};
-	// Se hace el proceso cada 16 datos
-	for(int i = 0; i<N; i=i+16){
-		__m128 reg1, reg2, reg3, reg4, maxVector, minVector;
-		// Se divide la data en 4 arreglos
-		
-		// Se carga la data en los arreglos
-		reg1 		= _mm_load_ps(arr1);
-		reg2 		= _mm_load_ps(arr2);
-		reg3 		= _mm_load_ps(arr3);
-		reg4 		= _mm_load_ps(arr4);
-		
-		
-		if(debugFlag == 1){
-			printf("\nDivision 4 registros:\n");
-			debug(reg1);
-			debug(reg2);
-			debug(reg3);
-			debug(reg4);
-		}
-		//############################
-		//#	Ordenamiento in register #
-		//############################
-		// Comparacion arreglo 1 con 3
-		maxVector 	= _mm_max_ps(reg1,reg3);
-		minVector 	= _mm_min_ps(reg1,reg3);
-		// Se dejan los minimos en el registro "menor"
-		reg1 		= minVector;
-		reg3 		= maxVector;
+	//float *outputArray= (float*)malloc(sizeof(float)*N);
+	float arr1[4] = {data[i],data[i+1],data[i+2],data[i+3]};
+	float arr2[4] = {data[i+4],data[i+5],data[i+6],data[i+7]};
+	float arr3[4] = {data[i+8],data[i+9],data[i+10],data[i+11]};
+	float arr4[4] = {data[i+12],data[i+13],data[i+14],data[i+15]};
 
-		// [[min R1][maxR3]]
-		// Comparacion arreglo 2 con 4
-		maxVector 	= _mm_max_ps(reg2,reg4);
-		minVector 	= _mm_min_ps(reg2,reg4);
-		// Se dejan los minimos en el registro "menor"
-		reg2 		= minVector;
-		reg4 		= maxVector;
+	__m128 reg1, reg2, reg3, reg4, maxVector, minVector;
+	// Se divide la data en 4 arreglos
 	
-
-		// Comparacion arreglo 1 con 2 y 3 con 4
-		maxVector 	= _mm_max_ps(reg1,reg2);
-		minVector 	= _mm_min_ps(reg1,reg2);
-		// Se dejan los minimos en el registro "menor"
-		reg1 		= minVector;
-		reg2 		= maxVector;
-		maxVector 	= _mm_max_ps(reg3,reg4);
-		minVector 	= _mm_min_ps(reg3,reg4);
-		// Se dejan los minimos en el registro "menor"
-		reg3 		= minVector;
-		reg4 		= maxVector;
-
-		 // Comparacion arreglo 2 con 3
-		maxVector 	= _mm_max_ps(reg2,reg3);
-		minVector 	= _mm_min_ps(reg2,reg3);
-		// Se dejan los minimos en el registro "menor"
-		reg2 		= minVector;
-		reg3 		= maxVector;
-
-		if(debugFlag == 1){
-			printf("\nDespues de hacer min max:\n");
-			debug(reg1);
-			debug(reg2);
-			debug(reg3);
-			debug(reg4);
-		}
-
-		
-		//////////////// 
-		// TRANSPONER //
-		////////////////
-		__m128 A 	= _mm_shuffle_ps(reg1, reg3, _MM_SHUFFLE(1,0,1,0));
-			   A 	= _mm_shuffle_ps(A,A,_MM_SHUFFLE(3,1,2,0));
+	// Se carga la data en los arreglos
+	reg1 		= _mm_load_ps(arr1);
+	reg2 		= _mm_load_ps(arr2);
+	reg3 		= _mm_load_ps(arr3);
+	reg4 		= _mm_load_ps(arr4);
 	
-
-		__m128 B 	= _mm_shuffle_ps(reg1, reg3, _MM_SHUFFLE(3,2,3,2));
-			   B 	= _mm_shuffle_ps(B,B,_MM_SHUFFLE(3,1,2,0));
 	
-		__m128 C 	= _mm_shuffle_ps(reg2, reg4, _MM_SHUFFLE(1,0,1,0));
-			   C 	= _mm_shuffle_ps(C,C,_MM_SHUFFLE(3,1,2,0));
 	
+	//############################
+	//#	Ordenamiento in register #
+	//############################
+	// Comparacion arreglo 1 con 3
+	maxVector 	= _mm_max_ps(reg1,reg3);
+	minVector 	= _mm_min_ps(reg1,reg3);
+	// Se dejan los minimos en el registro "menor"
+	reg1 		= minVector;
+	reg3 		= maxVector;
 
-		__m128 D 	= _mm_shuffle_ps(reg2, reg4, _MM_SHUFFLE(3,2,3,2));
-			   D 	= _mm_shuffle_ps(D,D,_MM_SHUFFLE(3,1,2,0));
+	// [[min R1][maxR3]]
+	// Comparacion arreglo 2 con 4
+	maxVector 	= _mm_max_ps(reg2,reg4);
+	minVector 	= _mm_min_ps(reg2,reg4);
+	// Se dejan los minimos en el registro "menor"
+	reg2 		= minVector;
+	reg4 		= maxVector;
 
 
-		__m128 A1 	= _mm_shuffle_ps(A, C, _MM_SHUFFLE(1,0,1,0));
-			   A1 	= _mm_shuffle_ps(A1,A1,_MM_SHUFFLE(3,1,2,0));
+	// Comparacion arreglo 1 con 2 y 3 con 4
+	maxVector 	= _mm_max_ps(reg1,reg2);
+	minVector 	= _mm_min_ps(reg1,reg2);
+	// Se dejan los minimos en el registro "menor"
+	reg1 		= minVector;
+	reg2 		= maxVector;
+	maxVector 	= _mm_max_ps(reg3,reg4);
+	minVector 	= _mm_min_ps(reg3,reg4);
+	// Se dejan los minimos en el registro "menor"
+	reg3 		= minVector;
+	reg4 		= maxVector;
+
+		// Comparacion arreglo 2 con 3
+	maxVector 	= _mm_max_ps(reg2,reg3);
+	minVector 	= _mm_min_ps(reg2,reg3);
+	// Se dejan los minimos en el registro "menor"
+	reg2 		= minVector;
+	reg3 		= maxVector;
+
 	
+	//////////////// 
+	// TRANSPONER //
+	////////////////
+	__m128 A 	= _mm_shuffle_ps(reg1, reg3, _MM_SHUFFLE(1,0,1,0));
+			A 	= _mm_shuffle_ps(A,A,_MM_SHUFFLE(3,1,2,0));
 
-		__m128 B1 	= _mm_shuffle_ps(A, C, _MM_SHUFFLE(3,2,3,2));
-			   B1 	= _mm_shuffle_ps(B1,B1,_MM_SHUFFLE(3,1,2,0));
+
+	__m128 B 	= _mm_shuffle_ps(reg1, reg3, _MM_SHUFFLE(3,2,3,2));
+			B 	= _mm_shuffle_ps(B,B,_MM_SHUFFLE(3,1,2,0));
+
+	__m128 C 	= _mm_shuffle_ps(reg2, reg4, _MM_SHUFFLE(1,0,1,0));
+			C 	= _mm_shuffle_ps(C,C,_MM_SHUFFLE(3,1,2,0));
+
+
+	__m128 D 	= _mm_shuffle_ps(reg2, reg4, _MM_SHUFFLE(3,2,3,2));
+			D 	= _mm_shuffle_ps(D,D,_MM_SHUFFLE(3,1,2,0));
+
+
+	__m128 A1 	= _mm_shuffle_ps(A, C, _MM_SHUFFLE(1,0,1,0));
+			A1 	= _mm_shuffle_ps(A1,A1,_MM_SHUFFLE(3,1,2,0));
+
+
+	__m128 B1 	= _mm_shuffle_ps(A, C, _MM_SHUFFLE(3,2,3,2));
+			B1 	= _mm_shuffle_ps(B1,B1,_MM_SHUFFLE(3,1,2,0));
+
+	__m128 C1 	= _mm_shuffle_ps(B, D, _MM_SHUFFLE(1,0,1,0));
+			C1 	= _mm_shuffle_ps(C1,C1,_MM_SHUFFLE(3,1,2,0));
+
+
+	__m128 D1 	= _mm_shuffle_ps(B, D, _MM_SHUFFLE(3,2,3,2));
+			D1 	= _mm_shuffle_ps(D1,D1,_MM_SHUFFLE(3,1,2,0));
+
 	
-		__m128 C1 	= _mm_shuffle_ps(B, D, _MM_SHUFFLE(1,0,1,0));
-			   C1 	= _mm_shuffle_ps(C1,C1,_MM_SHUFFLE(3,1,2,0));
-	
-
-		__m128 D1 	= _mm_shuffle_ps(B, D, _MM_SHUFFLE(3,2,3,2));
-			   D1 	= _mm_shuffle_ps(D1,D1,_MM_SHUFFLE(3,1,2,0));
-	
-		if(debugFlag == 1){
-			printf("\nDespues de transponer:\n");
-			debug(A1);
-			debug(B1);
-			debug(C1);
-			debug(D1);
-		}
-	 	
-		/////////
-		// BMN //
-		/////////
-		// 2 primeras filas
-		BMNResponse firstBMNResponse = BMN(A1, B1);
-		// 2 ultimas filas
-		BMNResponse secondBMNResponse = BMN(D1, C1);
-				
-
-		if(debugFlag == 1){
-			printf("\nDespues de hacer la primera BMN:\n");
-			debug(firstBMNResponse.s1);
-			debug(firstBMNResponse.s2);
-			debug(secondBMNResponse.s1);
-			debug(secondBMNResponse.s2);
-		}
-		
-	
-		//////////////////////////////
-		// Merge SIMD de secuencias //
-		//////////////////////////////
-
-		// Se alimenta la BMN con los 4 primeros elementos de ambas secuencias
-		BMNResponse firstMergeResponse = BMN(firstBMNResponse.s1, secondBMNResponse.s1);
-
-		BMNResponse secondMergeResponse;
-		// S2 pasa a ser S1, y para el 2do arreglo se utiliza aquel que tenga el menor elemento 0
-		if(firstBMNResponse.s2[0] < secondBMNResponse.s2[0]){
-			secondMergeResponse = BMN(firstMergeResponse.s2, firstBMNResponse.s2);
-		} else {
-			secondMergeResponse = BMN(firstMergeResponse.s2, secondBMNResponse.s2);
-		}
-		BMNResponse thirdMergeResponse;
-		// S2 pasa a ser S1, y para el segundo arreglo se utiliza el que no se utilizo antes
-		if(firstBMNResponse.s2[0] < secondBMNResponse.s2[0]){
-			thirdMergeResponse = BMN(secondMergeResponse.s2, secondBMNResponse.s2);
-		} else {
-			thirdMergeResponse = BMN(secondMergeResponse.s2, firstBMNResponse.s2);
-		}
-
-		if(debugFlag == 1){
-			printf("\nDespues de hacer Merge SIMD:\n");
-			debug(firstMergeResponse.s1);
-			debug(secondMergeResponse.s1);
-			debug(thirdMergeResponse.s1);
-			debug(thirdMergeResponse.s2);
-		}
-		// Se guardan los 4 registros en el arreglo final
-		_mm_store_ps(arr1, firstMergeResponse.s1);
-		_mm_store_ps(arr2, secondMergeResponse.s1);
-		_mm_store_ps(arr3, thirdMergeResponse.s1);
-		_mm_store_ps(arr4, thirdMergeResponse.s2);
-		/*for(int j = 0; j<N/16; j++){
-			outputArray[i+j] = arr1[j];
-			outputArray[i+j+4] = arr2[j];
-			outputArray[i+j+8] = arr3[j];
-			outputArray[i+j+12] = arr4[j];
-		}*/ 
+	/////////
+	// BMN //
+	/////////
+	// 2 primeras filas
+	BMNResponse firstBMNResponse = BMN(A1, B1);
+	// 2 ultimas filas
+	BMNResponse secondBMNResponse = BMN(D1, C1);
+			
+	/*
+	if(debugFlag == 1){
+		printf("\nDespues de hacer la primera BMN:\n");
+		debug(firstBMNResponse.s1);
+		debug(firstBMNResponse.s2);
+		debug(secondBMNResponse.s1);
+		debug(secondBMNResponse.s2);
 	}
+	*/
+	
 
-	Heap *heap = initHeap();
+	//////////////////////////////
+	// Merge SIMD de secuencias //
+	//////////////////////////////
+
+	// Se alimenta la BMN con los 4 primeros elementos de ambas secuencias
+	BMNResponse firstMergeResponse = BMN(firstBMNResponse.s1, secondBMNResponse.s1);
+
+	BMNResponse secondMergeResponse;
+	// S2 pasa a ser S1, y para el 2do arreglo se utiliza aquel que tenga el menor elemento 0
+	if(firstBMNResponse.s2[0] < secondBMNResponse.s2[0]){
+		secondMergeResponse = BMN(firstMergeResponse.s2, firstBMNResponse.s2);
+	} else {
+		secondMergeResponse = BMN(firstMergeResponse.s2, secondBMNResponse.s2);
+	}
+	BMNResponse thirdMergeResponse;
+	// S2 pasa a ser S1, y para el segundo arreglo se utiliza el que no se utilizo antes
+	if(firstBMNResponse.s2[0] < secondBMNResponse.s2[0]){
+		thirdMergeResponse = BMN(secondMergeResponse.s2, secondBMNResponse.s2);
+	} else {
+		thirdMergeResponse = BMN(secondMergeResponse.s2, firstBMNResponse.s2);
+	}
+	if(debugFlag == 1){
+		printf("\nDespues de hacer Merge SIMD:\n");
+		debug(firstMergeResponse.s1);
+		debug(secondMergeResponse.s1);
+		debug(thirdMergeResponse.s1);
+		debug(thirdMergeResponse.s2);
+	}
+	// Se guardan los 4 registros en el arreglo final
+	_mm_store_ps(arr1, firstMergeResponse.s1);
+	_mm_store_ps(arr2, secondMergeResponse.s1);
+	_mm_store_ps(arr3, thirdMergeResponse.s1);
+	_mm_store_ps(arr4, thirdMergeResponse.s2);
+
+
 	for(int j = 0; j<4; j++){
-		insertInHeap(heap, arr1[j]);
-	}
-	for(int j = 0; j<4; j++){
-		insertInHeap(heap, arr2[j]);
-	}
-	for(int j = 0; j<4; j++){
-		insertInHeap(heap, arr3[j]);
-	}
-	for(int j = 0; j<4; j++){
-		insertInHeap(heap, arr4[j]);
-	}
-	return heap;
-	
+		data[i+j] = arr1[j];
+		data[i+j+4] = arr2[j];
+		data[i+j+8] = arr3[j];
+		data[i+j+12] = arr4[j];
+	} 	
 }
