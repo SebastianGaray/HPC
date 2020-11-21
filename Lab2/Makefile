@@ -1,8 +1,8 @@
 CC=gcc
 CFLAGS=-Wall
 
-sort: sort.c simdsort.o files.o heap.o
-	$(CC) $(CFLAGS) heap.o simdsort.o files.o sort.c -o sort
+sort: sort.c simdsort.o files.o heap.o 
+	$(CC) $(CFLAGS) heap.o simdsort.o files.o sort.c -o sort -fopenmp
 
 simdsort.o: simdsort.h simdsort.c
 	$(CC) $(CFLAGS) simdsort.c -c

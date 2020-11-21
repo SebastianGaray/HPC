@@ -5,9 +5,7 @@
 #include <cpuid.h>     /* __get_cpuid_max, __get_cpuid */
 #include <mmintrin.h>  /* MMX instrinsics  __m64 integer type  */
 #include <xmmintrin.h> /* SSE  __m128  float */
-
-
-
+#include "simdsort.h"
 
 typedef struct myBMNResponse{
 	__m128 s1;
@@ -64,17 +62,19 @@ BMNResponse BMN(__m128 vector1, __m128 vector2){
 }
 
 
-void simdsort(int N, int debugFlag, float *data){
+Heap *simdsort(int N, int debugFlag, float *data){
    	
 	float *outputArray= (float*)malloc(sizeof(float)*N);
+		
+		float arr1[4] __attribute__ ((aligned (16))) = {data[0],data[1],data[2],data[3]};
+		float arr2[4] __attribute__ ((aligned (16))) = {data[4],data[5],data[6],data[7]};
+		float arr3[4] __attribute__ ((aligned (16))) = {data[8],data[9],data[10],data[11]};
+		float arr4[4] __attribute__ ((aligned (16))) = {data[12],data[13],data[14],data[15]};
 	// Se hace el proceso cada 16 datos
 	for(int i = 0; i<N; i=i+16){
 		__m128 reg1, reg2, reg3, reg4, maxVector, minVector;
 		// Se divide la data en 4 arreglos
-		float arr1[4] __attribute__ ((aligned (16))) = {data[i],data[i+1],data[i+2],data[i+3]};
-		float arr2[4] __attribute__ ((aligned (16))) = {data[i+4],data[i+5],data[i+6],data[i+7]};
-		float arr3[4] __attribute__ ((aligned (16))) = {data[i+8],data[i+9],data[i+10],data[i+11]};
-		float arr4[4] __attribute__ ((aligned (16))) = {data[i+12],data[i+13],data[i+14],data[i+15]};
+		
 		// Se carga la data en los arreglos
 		reg1 		= _mm_load_ps(arr1);
 		reg2 		= _mm_load_ps(arr2);
@@ -228,22 +228,27 @@ void simdsort(int N, int debugFlag, float *data){
 		_mm_store_ps(arr2, secondMergeResponse.s1);
 		_mm_store_ps(arr3, thirdMergeResponse.s1);
 		_mm_store_ps(arr4, thirdMergeResponse.s2);
-		for(int j = 0; j<N/16; j++){
+		/*for(int j = 0; j<N/16; j++){
 			outputArray[i+j] = arr1[j];
 			outputArray[i+j+4] = arr2[j];
 			outputArray[i+j+8] = arr3[j];
 			outputArray[i+j+12] = arr4[j];
-		}
+		}*/ 
 	}
-	if(debugFlag == 1){
-		printf("\nArray final ordenado:\n");
-		for(int x = 0; x<N; x++){
-			printf("%f ",outputArray[x]);
-		}
-		printf("\n");
+
+	Heap *heap = initHeap();
+	for(int j = 0; j<4; j++){
+		insertInHeap(heap, arr1[j]);
 	}
-	//sort(outputArray, N);
+	for(int j = 0; j<4; j++){
+		insertInHeap(heap, arr2[j]);
+	}
+	for(int j = 0; j<4; j++){
+		insertInHeap(heap, arr3[j]);
+	}
+	for(int j = 0; j<4; j++){
+		insertInHeap(heap, arr4[j]);
+	}
+	return heap;
 	
-	
-	//writeFile(outputFile, N, outputArray);
 }

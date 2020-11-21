@@ -2,17 +2,88 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <unistd.h>
-
+#include <omp.h>
 #include "simdsort.h"
 #include "files.h"
-#include "heap.h"
+#include <sys/times.h>
 
 
+
+void inicio (float *arrayNumbers, int length, int numThreads){
+ 	int numLevels = 3;
+	omp_set_num_threads(numThreads);
+	#pragma omp parallel
+	#pragma omp single nowait
+	recorrer(arrayNumbers, length, numLevels);
+}
+
+void recorrer(float *arrayNumbers,int length, int numLevels){
+	int tid = omp_get_thread_num();
+	printf("thread %d\n", tid);
+	for (int i = 0; i < length; ++i)
+	{
+		printf("%f-", arrayNumbers[i] );
+	}
+	printf("\n");
+	 if(numLevels == 0){
+		 int i;
+		 for ( i = 0;i < length ;i +=16){
+			Heap *h = simdsort(16,0, arrayNumbers);
+			debugHeap(h);
+		 }
+		mostrar(arrayNumbers,length);
+		return;
+	 }
+	 int mitad = length/2;
+	
+	#pragma omp task untied
+	{
+		recorrer(arrayNumbers, mitad, numLevels-1);
+	}
+	#pragma omp task untied
+	{
+		recorrer(arrayNumbers+mitad, mitad, numLevels-1);
+	}
+
+}
+void suma(float *arrayNumbers,int length){
+
+}
+void mostrar(float *arrayNumbers,int length){
+
+}
 
 
 int main(int argc, char **argv){
 
-	Heap *heap = initHeap();
+	int N, l;
+	N = 4; //hebras
+	l = 32; //largo
+	float arrayNumbers[l];
+	for (int i = 0; i < l; ++i)
+	{
+		arrayNumbers[i] =  rand() % (l);
+	}
+
+	/*printf("los valores son: \n");
+	for (int i = 0; i < l; ++i)
+	{
+		printf("%f \n", arrayNumbers[i] );
+	}*/ 
+	
+	//Mido tiempo de inicio de procesamiento
+	struct tms t_ini_struct;
+	clock_t t_ini = times(&t_ini_struct);
+	
+	inicio(arrayNumbers, l, N);
+	struct tms t_fin_struct;
+	clock_t t_fin = times(&t_fin_struct);
+	printf("El algoritmo demoró %.3f segundos\n", (t_fin-t_ini)/(double)sysconf(_SC_CLK_TCK));
+	return 0;
+
+
+	
+	/*Heap *heap = initHeap();
 	insertInHeap(heap, 88);
 	insertInHeap(heap, 0);
 	insertInHeap(heap, 28);
