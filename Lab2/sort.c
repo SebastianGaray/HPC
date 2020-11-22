@@ -11,7 +11,7 @@
 
 void multiway_sort(float *arrayNumbers,int length){
 	Heap *h = initHeap(length/16);
-	float *outputArray= (float*)malloc(sizeof(float)*length);
+	float outputArray[length];
 	for ( int i = 0;i < length ;i +=16){
 		insertInHeap(h, arrayNumbers[i],i);
 	}
@@ -22,7 +22,12 @@ void multiway_sort(float *arrayNumbers,int length){
 			insertInHeap(h, arrayNumbers[x.originalListIndex+1],x.originalListIndex+1);
 		}
 	}
+	free(h->values);
+	free(h);
 	
+	for(int i = 0; i<length; i++){
+		arrayNumbers[i] = outputArray[i];
+	}
 	
 }
 
@@ -48,6 +53,7 @@ void dividir(float *arrayNumbers, int length, int numLevels)
 	{
 		dividir(arrayNumbers + mitad, mitad, numLevels - 1);
 	}
+	
 }
 
 void inicio(float *arrayNumbers, int length, int numThreads, int numLevels)
@@ -56,39 +62,43 @@ void inicio(float *arrayNumbers, int length, int numThreads, int numLevels)
 	#pragma omp parallel
 	dividir(arrayNumbers, length, numLevels);
 	#pragma omp single nowait
-	printf("-----");
+	multiway_sort(arrayNumbers, length);
 	/*
 	for ( int i = 0;i < length ;i +=1){
 		printf("%f ", arrayNumbers[i]);
 	}
-	printf("\n-----\n");
 	*/
+	printf("\n-----\n");
 	return;
 }
 
 int main(int argc, char **argv)
 {
 	// N Hebras, l largo
-	int N, l, numLevels;
-	char *inputFile;
-	numLevels = 1;
+	int numThreads, N, numLevels;
+	char *inputFile, *outputFile;
+	numLevels = 5;
 	inputFile = "65536floats.raw";
-	l = 65536;
-	float *arrayNumbers = readFile(inputFile, l);
-	for(N = 1; N <= 50; N++){
+	outputFile = "salida.raw";
+	N = 65536;
+	float arrayNumbers[N];
+	readFile(inputFile, N, arrayNumbers);
+	for(numThreads = 1; numThreads <= 100; numThreads++){
 		printf("Comenzando configuracion:\n");
-		printf("Hebras: {%i} size: {%i} niveles: {%i}\n", N, l, numLevels);
+		printf("Hebras: {%i} size: {%i} niveles: {%i}\n", numThreads, N, numLevels);
 		
 
 		//Mido tiempo de inicio de procesamiento
 		struct tms t_ini_struct;
 		clock_t t_ini = times(&t_ini_struct);
 
-		inicio(arrayNumbers, l, N, numLevels);
+		inicio(arrayNumbers, N, numThreads, numLevels);
 		struct tms t_fin_struct;
 		clock_t t_fin = times(&t_fin_struct);
 		printf("El algoritmo demoró %.3f segundos\n", (t_fin - t_ini) / (double)sysconf(_SC_CLK_TCK));
 	}
+
+	writeFile(outputFile, N, arrayNumbers);
 	return 0;
 
 	/*Heap *heap = initHeap();

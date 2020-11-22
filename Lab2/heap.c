@@ -33,10 +33,9 @@ int getRight (int actualPosition) {
 
 
 Heap *initHeap(int size){
-    HeapValues *values = (HeapValues*)malloc(sizeof(HeapValues)*size);
     int lastPos = 0;
-    Heap *heap = (Heap*)malloc(sizeof(Heap));
-    heap->values = values;
+    Heap *heap = malloc(sizeof(Heap));
+    heap->values = malloc(sizeof(HeapValues)*size);
     heap->lastPos = lastPos;
     heap->size = size;
     return heap;
@@ -86,17 +85,26 @@ void heapifyDown(Heap *heap, int posActual){
 
 void heapifyUp(Heap *heap, int posActual){
     int fIndex = getFather(posActual);
-    if (heap->values[posActual].value < heap->values[fIndex].value){
+    /*
+    printf("\nFIndex: %i ", fIndex);
+    printf("posActual: %i ", posActual);
+    printf("heap size: %i\n", heap->size);
+    */
+    if (fIndex != -2 && heap->values[posActual].value < heap->values[fIndex].value){
         swap(heap,posActual,fIndex);
         heapifyUp(heap, fIndex);
     }
 }
 
 void insertInHeap(Heap *heap, float value, int originalListIndex){
+    //printf("\nInsertando: %f",value);
+    //printf("\nEn pos: %i",heap->lastPos);
     heap->values[heap->lastPos].value = value;
     heap->values[heap->lastPos].originalListIndex = originalListIndex;
     heap->lastPos = heap->lastPos + 1;
-    if(heap->lastPos != 1){
+
+
+    if(heap->lastPos > 1){
         heapifyUp(heap,heap->lastPos-1);
     }
 }

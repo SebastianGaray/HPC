@@ -6,9 +6,8 @@
 #include "files.h"
 
 
-float *readFile(char *inputFile, int N){
+void readFile(char *inputFile, int N, float *array){
     FILE *file = fopen(inputFile,"rb");
-    float *array= (float*)malloc(sizeof(float)*N);
 	if (file == NULL)
 	{
 		fprintf(stderr, "ERROR, Archivo de entrada no encontrado\n");
@@ -17,7 +16,6 @@ float *readFile(char *inputFile, int N){
 	}
     fread(array, sizeof(float), N, file);
 	fclose(file);
-    return array;
 }
 
 void writeFile(char *outputFile, int N, float *outputArrayFinal){
