@@ -76,14 +76,16 @@ int main(int argc, char **argv)
 {
 	// N Hebras, l largo
 	int numThreads, N, numLevels;
-	char *inputFile, *outputFile;
-	numLevels = 5;
+	char *inputFile, *outputFile,*outputFile2;
+	numLevels = 2;
 	inputFile = "65536floats.raw";
 	outputFile = "salida.raw";
+	outputFile2 = "salidaTEXT.txt";
 	N = 65536;
 	float arrayNumbers[N];
 	readFile(inputFile, N, arrayNumbers);
-	for(numThreads = 1; numThreads <= 100; numThreads++){
+	float speep[100];
+	for(numThreads = 1; numThreads <= 50; numThreads++){
 		printf("Comenzando configuracion:\n");
 		printf("Hebras: {%i} size: {%i} niveles: {%i}\n", numThreads, N, numLevels);
 		
@@ -95,10 +97,18 @@ int main(int argc, char **argv)
 		inicio(arrayNumbers, N, numThreads, numLevels);
 		struct tms t_fin_struct;
 		clock_t t_fin = times(&t_fin_struct);
-		printf("El algoritmo demoró %.3f segundos\n", (t_fin - t_ini) / (double)sysconf(_SC_CLK_TCK));
+		float s  = ( (t_fin - t_ini) / (double)sysconf(_SC_CLK_TCK) );
+		printf("El algoritmo demoró %f segundos\n", s);
+		speep[numThreads-1] = s;
 	}
 
-	writeFile(outputFile, N, arrayNumbers);
+
+	FILE *file = fopen(outputFile2,"w");
+	for(int i = 0; i<50; i++){
+    	fwrite(&speep[i],sizeof(float),1,file);
+	}
+	fclose(file);
+	//writeFile(outputFile, N, arrayNumbers);
 	return 0;
 
 	/*Heap *heap = initHeap();
