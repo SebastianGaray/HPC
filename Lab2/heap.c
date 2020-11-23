@@ -2,19 +2,11 @@
 #include <stdlib.h>
 
 #include "heap.h"
-
-void debugHeap(Heap *heap){
-    printf("\nLast pos: %i\n", heap->lastPos);
-    printf("Values:\n");
-	for(int i = 0; i<heap->size; i++){
-		printf("valor: %f ",heap->values[i].value);
-        printf("viene de: %d ",heap->values[i].originalListIndex);
-	    printf("\n");
-
-	}
-	printf("\n");
-}
-
+/*
+Funcion que obtiene la posicion del padre de mi dato actual
+Entrada: La posicion del dato actual
+Salida: La posicion del padre de mi dato actual
+*/
 int getFather (int actualPosition) {
 	if (actualPosition == 0){
 		return -2;
@@ -24,19 +16,32 @@ int getFather (int actualPosition) {
 	}
 	return (actualPosition/2);
 }
+/*
+Funcion que obtiene la posicion del hijo izquierdo
+Entrada: La posicion del dato actual
+Salida: La posicion del hijo izquierdo de mi dato actual
+*/
 int getLeft (int actualPosition) {
 	return (2*actualPosition +1);
 }
+/*
+Funcion que obtiene la posicion del hijo derecho
+Entrada: La posicion del dato actual
+Salida: La posicion del hijo derecho de mi dato actual
+*/
 int getRight (int actualPosition) {
 	return (2*actualPosition +2);
 }
 
-
+/*
+Funcion que inicializa el heap
+Entrada: La cantidad de datos que tendra el heap
+Salida: El heap con sus datos inicializados
+*/
 Heap *initHeap(int size){
-    int lastPos = 0;
     Heap *heap = malloc(sizeof(Heap));
     heap->values = malloc(sizeof(HeapValues)*size);
-    heap->lastPos = lastPos;
+    heap->lastPos = 0;
     heap->size = size;
     return heap;
 }
@@ -59,24 +64,30 @@ void heapifyDown(Heap *heap, int posActual){
     int sRightIndex = getRight(posActual);
     float min;
     int minIndex;
-    /* Caso 1 : */ 
-    /*  No tengo hijos */
-    // Mayor o igual ?
+    // Caso 1 : 
+    //  No tengo hijos
     if  ( (sLeftIndex  >= heap->lastPos) &&  (sRightIndex >= heap->lastPos)){
         return;
     }
+    // Caso 2:
+    // No tengo hijo izquierdo
     else if (sLeftIndex  >= heap->lastPos){
         min =  heap->values[sRightIndex].value;
         minIndex = sRightIndex;
     }
+    // Caso 2:
+    // No tengo hijo derecho
     else if (sRightIndex >=  heap->lastPos){
         min =  heap->values[sLeftIndex].value;
         minIndex = sLeftIndex;
     }
+    // Caso 3:
+    // Calcular el menor entre mis hijos
     else {
         min = (heap->values[sLeftIndex].value < heap->values[sRightIndex].value ? heap->values[sLeftIndex].value: heap->values[sRightIndex].value);
         minIndex =  (heap->values[sLeftIndex].value < heap->values[sRightIndex].value ? sLeftIndex: sRightIndex);
     }
+    // Se realiza un swap si es que el valor actual es mayor al hijo menor
     if (heap->values[posActual].value > min){
          swap(heap,posActual,minIndex);
          heapifyDown(heap,minIndex);
@@ -85,11 +96,6 @@ void heapifyDown(Heap *heap, int posActual){
 
 void heapifyUp(Heap *heap, int posActual){
     int fIndex = getFather(posActual);
-    /*
-    printf("\nFIndex: %i ", fIndex);
-    printf("posActual: %i ", posActual);
-    printf("heap size: %i\n", heap->size);
-    */
     if (fIndex != -2 && heap->values[posActual].value < heap->values[fIndex].value){
         swap(heap,posActual,fIndex);
         heapifyUp(heap, fIndex);
@@ -97,13 +103,9 @@ void heapifyUp(Heap *heap, int posActual){
 }
 
 void insertInHeap(Heap *heap, float value, int originalListIndex){
-    //printf("\nInsertando: %f",value);
-    //printf("\nEn pos: %i",heap->lastPos);
     heap->values[heap->lastPos].value = value;
     heap->values[heap->lastPos].originalListIndex = originalListIndex;
     heap->lastPos = heap->lastPos + 1;
-
-
     if(heap->lastPos > 1){
         heapifyUp(heap,heap->lastPos-1);
     }

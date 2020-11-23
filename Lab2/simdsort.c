@@ -62,7 +62,7 @@ BMNResponse BMN(__m128 vector1, __m128 vector2){
 }
 
 
-void simdsort(int debugFlag, int i,  float *data){
+void simdsort(int i,  float *data){
    	
 	//float *outputArray= (float*)malloc(sizeof(float)*N);
 	float arr1[4] = {data[i],data[i+1],data[i+2],data[i+3]};
@@ -193,13 +193,7 @@ void simdsort(int debugFlag, int i,  float *data){
 	} else {
 		thirdMergeResponse = BMN(secondMergeResponse.s2, firstBMNResponse.s2);
 	}
-	if(debugFlag == 1){
-		printf("\nDespues de hacer Merge SIMD:\n");
-		debug(firstMergeResponse.s1);
-		debug(secondMergeResponse.s1);
-		debug(thirdMergeResponse.s1);
-		debug(thirdMergeResponse.s2);
-	}
+
 	// Se guardan los 4 registros en el arreglo final
 	_mm_store_ps(arr1, firstMergeResponse.s1);
 	_mm_store_ps(arr2, secondMergeResponse.s1);

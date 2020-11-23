@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -ggdb3
+CFLAGS=-Wall
 
 sort: sort.c simdsort.o files.o heap.o 
 	$(CC) $(CFLAGS) heap.o simdsort.o files.o sort.c -o sort -fopenmp
