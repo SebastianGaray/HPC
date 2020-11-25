@@ -8,6 +8,8 @@
 #define NG 10
 /* luego 256   */
 
+// OMP  // 
+
 int minReduction(int arr[]){
     int max_val = arr[0];
     int index = 0;
