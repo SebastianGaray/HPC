@@ -58,9 +58,6 @@ int main(int argc, char **argv){
             case 'V':
 				V = atoi(optarg);
 				break;
-			case 'B':
-				Bs = atoi(optarg);
-				break;
 			case '?':
                 fprintf(stderr, "ERROR, Opcion invalida: -%c\n", optopt);
                 return EXIT_FAILURE;
@@ -69,6 +66,7 @@ int main(int argc, char **argv){
                 return EXIT_FAILURE;
 		}
     }
+    Bs = threadsPerBlock;
     int size = N*N*sizeof(float);
 	srand(time(NULL)); 
     //MEMORIA HOST
