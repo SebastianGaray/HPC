@@ -129,12 +129,12 @@ int main(int argc, char **argv){
         for(int j = 0; j<N; j++){
             B_GPU[i*N+j] = 0;
         }
-    }
+    } 
     // Nota: Se comenta la medicion del tiempo del programa
     //clock_t t; 
     //t = clock(); 
     suma2d_cpu(A, B_GPU, N,V);
-    //t = clock() - t; 
+    //t = clock() - t;   
     //double time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds 
 	//printf("El tiempo de ejecucion en CPU fue de: %f milisegundos\n", time_taken*1000);
     printf("Resultado CPU:\n");

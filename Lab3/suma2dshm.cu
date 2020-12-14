@@ -125,11 +125,11 @@ int main(int argc, char **argv){
     }
 	cudaFree(d_a);
     cudaFree(d_b);
-     
+      
     ///////
     //CPU//
     ///////
-
+  
     float *B_GPU = (float *)malloc(size);
     for(int i = 0; i<N; i++){
         for(int j = 0; j<N; j++){
